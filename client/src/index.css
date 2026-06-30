@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── GLOBAL SCROLL & OVERFLOW RESET ──────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;   /* page body scrolls — nothing else should */
+}
+
+/* ─── TAILWIND BASE LAYER ──────────────────────────────────────────────────── */
 @layer base {
   :root {
     color-scheme: dark;
@@ -14,10 +29,9 @@
   body {
     @apply bg-slate-950 text-slate-100 font-sans antialiased;
     background-image:
-      radial-gradient(circle at top left, rgba(20, 184, 166, 0.14), transparent 32%),
+      radial-gradient(circle at top left,  rgba(20, 184, 166, 0.14), transparent 32%),
       radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12), transparent 28%),
       linear-gradient(135deg, #020617 0%, #020617 45%, #07111f 100%);
-    min-height: 100vh;
   }
 
   ::selection {
@@ -29,8 +43,71 @@
   }
 }
 
+/* ─── AUTH LAYOUT CLASSES ──────────────────────────────────────────────────── */
 @layer components {
-  /* Glass surfaces */
+
+  /*
+   * .auth-container
+   * Wraps the entire auth page.
+   * — flex column, items centred horizontally
+   * — align-items: flex-start so content flows DOWN, not compressed to centre
+   * — padding top/bottom ensures safe spacing on all screen sizes
+   * — NO overflow:hidden, NO fixed height
+   */
+  .auth-container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;  /* ← key: page scrolls, content is NOT centred-clipped */
+    padding: 40px 20px 60px;
+    box-sizing: border-box;
+    overflow-x: hidden;           /* horizontal scroll permanently blocked */
+  }
+
+  /*
+   * .auth-card
+   * The glass form card.
+   * — width 100% up to 500px
+   * — height:auto — grows with content
+   * — overflow:visible — NOTHING is clipped
+   */
+  .auth-card {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+    overflow: visible;
+    padding: 36px 32px;
+    border-radius: 24px;
+    box-sizing: border-box;
+  }
+
+  /* .form-fields — the form itself */
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow: visible;      /* never clip fields */
+  }
+
+  /* .auth-button — submit / register / login */
+  .auth-button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  /* ── Glass surfaces ── */
   .glass-panel {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.78));
     backdrop-filter: blur(18px);
@@ -62,7 +139,7 @@
     border-right: 1px solid rgba(255, 255, 255, 0.08);
   }
 
-  /* Typography */
+  /* ── Typography ── */
   .eyebrow {
     @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-gov-400/90;
   }
@@ -79,7 +156,7 @@
     @apply text-base font-bold text-slate-100 flex items-center gap-2.5;
   }
 
-  /* Layout shells */
+  /* ── Layout shells ── */
   .section-shell {
     @apply rounded-2xl border border-slate-800/70 bg-slate-900/45 shadow-[0_12px_35px_rgba(2,6,23,0.35)] backdrop-blur-xl transition-all duration-300;
   }
@@ -88,7 +165,7 @@
     @apply rounded-2xl border border-slate-800/70 bg-gradient-to-br from-slate-900/95 via-slate-900/85 to-slate-800/90 p-6 sm:p-8 shadow-[0_20px_60px_rgba(2,6,23,0.4)];
   }
 
-  /* Buttons */
+  /* ── Buttons ── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gov-500 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-gov-950/40 transition-all duration-200 hover:-translate-y-0.5 hover:bg-gov-400 hover:shadow-gov-500/20 focus:outline-none focus:ring-2 focus:ring-gov-400 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:pointer-events-none disabled:opacity-60;
   }
@@ -101,7 +178,7 @@
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-gov-400 transition-all duration-200 hover:bg-gov-500/10 hover:text-gov-300;
   }
 
-  /* Forms */
+  /* ── Forms ── */
   .form-group {
     @apply space-y-2;
   }
@@ -128,69 +205,119 @@
 
   .glass-select {
     @apply glass-input appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 2.5rem;
   }
 
   .glass-textarea {
     @apply glass-input min-h-[100px] resize-y;
   }
 
-  /* Status badges */
+  /* ── Status badges ── */
   .badge-chip {
     @apply inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider;
   }
 
-  .badge-resolved {
-    @apply badge-chip border-emerald-500/30 bg-emerald-500/10 text-emerald-400;
-  }
+  .badge-resolved { @apply badge-chip border-emerald-500/30 bg-emerald-500/10 text-emerald-400; }
+  .badge-pending  { @apply badge-chip border-amber-500/30  bg-amber-500/10  text-amber-400;   }
+  .badge-progress { @apply badge-chip border-sky-500/30    bg-sky-500/10    text-sky-400;     }
+  .badge-overdue  { @apply badge-chip border-rose-500/30   bg-rose-500/10   text-rose-400;    }
+  .badge-active   { @apply badge-chip border-orange-500/30 bg-orange-500/10 text-orange-400;  }
+  .badge-default  { @apply badge-chip border-slate-600/50  bg-slate-800/60  text-slate-300;   }
 
-  .badge-pending {
-    @apply badge-chip border-amber-500/30 bg-amber-500/10 text-amber-400;
-  }
+  /* ── Nav ── */
+  .nav-link          { @apply flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200; }
+  .nav-link-active   { @apply nav-link border border-gov-500/40 bg-gov-500/15 text-gov-300 shadow-lg shadow-gov-950/20; }
+  .nav-link-inactive { @apply nav-link text-slate-400 hover:bg-slate-900/60 hover:text-slate-200; }
 
-  .badge-progress {
-    @apply badge-chip border-sky-500/30 bg-sky-500/10 text-sky-400;
-  }
-
-  .badge-overdue {
-    @apply badge-chip border-rose-500/30 bg-rose-500/10 text-rose-400;
-  }
-
-  .badge-active {
-    @apply badge-chip border-orange-500/30 bg-orange-500/10 text-orange-400;
-  }
-
-  .badge-default {
-    @apply badge-chip border-slate-600/50 bg-slate-800/60 text-slate-300;
-  }
-
-  /* Nav active state */
-  .nav-link {
-    @apply flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200;
-  }
-
-  .nav-link-active {
-    @apply nav-link border border-gov-500/40 bg-gov-500/15 text-gov-300 shadow-lg shadow-gov-950/20;
-  }
-
-  .nav-link-inactive {
-    @apply nav-link text-slate-400 hover:bg-slate-900/60 hover:text-slate-200;
-  }
-
-  /* Empty & loading states */
-  .empty-state {
-    @apply flex flex-col items-center justify-center py-12 px-6 text-center;
-  }
-
-  .empty-state-icon {
-    @apply mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/80 text-slate-500;
-  }
-
+  /* ── Empty & loading states ── */
+  .empty-state      { @apply flex flex-col items-center justify-center py-12 px-6 text-center; }
+  .empty-state-icon { @apply mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/80 text-slate-500; }
   .skeleton {
-    @apply animate-pulse rounded-lg bg-slate-800/80;
+    @apply rounded-lg bg-slate-800/80;
+    background: linear-gradient(90deg,
+      rgba(30,41,59,0.8) 25%,
+      rgba(51,65,85,0.6) 50%,
+      rgba(30,41,59,0.8) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  /* ── Data table ── */
+  .data-table {
+    @apply w-full border-collapse text-xs;
+  }
+
+  .data-table th {
+    @apply py-3 pl-4 pr-2 text-left text-[10px] font-bold uppercase tracking-wider
+           text-slate-500 border-b border-slate-800/80 whitespace-nowrap
+           cursor-pointer select-none hover:text-slate-300 transition-colors;
+  }
+
+  .data-table td {
+    @apply py-3.5 pl-4 pr-2 transition-colors;
+  }
+
+  .data-table tbody tr {
+    @apply border-b border-slate-800/40 hover:bg-slate-900/40 transition-colors;
+  }
+
+  /* ── Status pill helpers ── */
+  .status-pill {
+    @apply inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider;
   }
 }
 
-/* Leaflet Map Overrides */
+/* ─── SCROLL UTILITIES ──────────────────────────────────────────────────────── */
+/*
+ * Apply .scroll-area to any panel that intentionally needs its own scroll
+ * (e.g. notification dropdown, a data table container).
+ * This keeps the pattern explicit and auditable.
+ */
+.scroll-area {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  /* Thin scrollbar inside panels */
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+
+.scroll-area::-webkit-scrollbar       { width: 4px; }
+.scroll-area::-webkit-scrollbar-track { background: transparent; }
+.scroll-area::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+/* ─── DASHBOARD MAIN CONTENT AREA ──────────────────────────────────────────── */
+/*
+ * The <main> in DashboardLayout has overflow-y-auto.
+ * Give it smooth scrolling too, and a consistent scrollbar.
+ */
+main {
+  scroll-behavior: smooth;
+}
+
+/* ─── RESPONSIVE AUTH CARD ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .auth-card {
+    padding: 24px 18px;
+    border-radius: 20px;
+  }
+
+  .auth-container {
+    padding: 24px 16px 48px;
+  }
+}
+
+@media (max-width: 400px) {
+  .auth-card {
+    padding: 20px 14px;
+  }
+}
+
+/* ─── LEAFLET MAP OVERRIDES ─────────────────────────────────────────────────── */
 .leaflet-container {
   font-family: inherit;
   background-color: #0f172a !important;
@@ -207,54 +334,39 @@
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
 }
 
-.leaflet-popup-close-button {
-  color: #94a3b8 !important;
+.leaflet-popup-close-button { color: #94a3b8 !important; }
+
+/* ─── CUSTOM SCROLLBAR (page-level only) ────────────────────────────────────── */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ─── ANIMATIONS ────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: #0f172a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-/* Animations */
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(244, 63, 94, 0.4); }
-  50% { border-color: rgba(244, 63, 94, 1); }
+  50%       { border-color: rgba(244, 63, 94, 1);   }
 }
 
 @keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
-.animate-pulse-border {
-  animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.4s ease-out forwards;
-}
+.animate-pulse-border { animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+.animate-fade-in-up   { animation: fade-in-up  0.35s ease-out forwards; }
+.animate-slide-down   { animation: slide-down  0.3s  ease-out forwards; }
 
 .stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.10s; }
 .stagger-3 { animation-delay: 0.15s; }

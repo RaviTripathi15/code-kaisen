@@ -77,7 +77,7 @@ const ComplaintsQueue = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left list */}
         <div className="lg:col-span-1 space-y-4">
-          <div className="glass-panel p-5 rounded-2xl border border-slate-850 h-[65vh] overflow-y-auto pr-1">
+          <div className="glass-panel p-5 rounded-2xl border border-slate-850">
             <h3 className="font-bold text-sm text-slate-200 border-b border-slate-850 pb-3 mb-4 flex items-center gap-2">
               <FileText className="h-4.5 w-4.5 text-gov-400" />
               Incoming Tickets

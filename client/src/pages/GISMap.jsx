@@ -67,7 +67,7 @@ const GISMap = () => {
   }, []);
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] flex-col gap-6">
+    <div className="flex flex-col gap-6">
       <PageHeader
         eyebrow="GIS Coordination"
         breadcrumb="Utility Map"
@@ -75,7 +75,7 @@ const GISMap = () => {
         subtitle="Explore excavation buffers, active projects, and citizen complaints across the city in real time."
       />
 
-      <div className="min-h-[400px] flex-1">
+      <div style={{ height: '70vh', minHeight: '420px' }}>
         {loading ? (
           <div className="glass-panel flex h-full flex-col items-center justify-center gap-3 rounded-2xl">
             <LoadingSpinner size="lg" />

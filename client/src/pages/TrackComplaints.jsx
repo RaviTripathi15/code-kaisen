@@ -92,7 +92,7 @@ const TrackComplaints = () => {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-1">
-          <div className="section-shell h-[65vh] overflow-y-auto p-5">
+          <div className="section-shell p-5">
             <h3 className="section-title mb-5 border-b border-slate-800/80 pb-4 text-sm">
               <FileText className="h-4 w-4 text-gov-400" />
               Your Complaints

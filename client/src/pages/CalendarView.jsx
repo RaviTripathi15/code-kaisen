@@ -47,7 +47,7 @@ const CalendarView = () => {
           ) : activePermits.length === 0 ? (
             <div className="py-8 text-center text-xs text-slate-500">No active excavations today.</div>
           ) : (
-            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            <div className="space-y-3">
               {activePermits.map(p => (
                 <div key={p._id} className="p-3.5 bg-orange-500/5 border border-orange-500/20 rounded-xl space-y-1">
                   <div className="flex justify-between items-center">
@@ -74,7 +74,7 @@ const CalendarView = () => {
           ) : conflictPermits.length === 0 ? (
             <div className="py-8 text-center text-xs text-slate-500">No coordinated conflicts detected.</div>
           ) : (
-            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            <div className="space-y-3">
               {conflictPermits.map(p => (
                 <div key={p._id} className="p-3.5 bg-rose-500/5 border border-rose-500/20 rounded-xl space-y-1">
                   <div className="flex justify-between items-center">
@@ -101,7 +101,7 @@ const CalendarView = () => {
           ) : upcomingPermits.length === 0 ? (
             <div className="py-8 text-center text-xs text-slate-500">No upcoming permits scheduled.</div>
           ) : (
-            <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            <div className="space-y-3">
               {upcomingPermits.map(p => (
                 <div key={p._id} className="p-3.5 bg-slate-900 border border-slate-850 rounded-xl space-y-1">
                   <div className="flex justify-between items-center">

@@ -2,209 +2,294 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { User, Mail, Lock, Phone, MapPin, Building, LogIn } from 'lucide-react';
+import {
+  User, Mail, Lock, Phone, MapPin, Building,
+  LogIn, AlertCircle, Eye, EyeOff,
+} from 'lucide-react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
+/**
+ * Register — scroll contract:
+ *
+ *  ✅ form has NO max-height
+ *  ✅ form has NO overflow-y:auto / overflow:hidden
+ *  ✅ form uses .form-fields (flex-col + gap) — no space-y clipping risk
+ *  ✅ submit button is a normal block at the bottom of form flow
+ *  ✅ AuthLayout (.auth-container) lets the page body scroll
+ */
 const Register = () => {
   const { register: registerAuth } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [departments, setDepartments] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [apiError, setApiError] = useState('');
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      role: 'Citizen',
-    }
+  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+    defaultValues: { role: 'Citizen' },
   });
 
   const selectedRole = watch('role');
 
-  // Load departments for registration lookup
   useEffect(() => {
-    const fetchDepts = async () => {
-      try {
-        const res = await axios.get('/api/departments');
-        if (res.data.success) {
-          setDepartments(res.data.data);
-        }
-      } catch (err) {
-        console.error('Error fetching departments:', err);
-      }
-    };
-    fetchDepts();
+    axios.get('/api/departments')
+      .then(res => { if (res.data.success) setDepartments(res.data.data); })
+      .catch(err => console.error('Departments fetch error:', err));
   }, []);
 
   const onSubmit = async (data) => {
     setLoading(true);
+    setApiError('');
     const res = await registerAuth(data);
     if (res.success) {
-      toast.success('Registration completed! Logged in.');
+      toast.success('Registration completed! Welcome aboard.');
       navigate('/');
     } else {
+      setApiError(res.error);
       toast.error(res.error);
     }
     setLoading(false);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
+
+      {/* ── Header ── */}
       <div className="text-center">
-        <h3 className="text-xl font-bold text-white">Create Portal Account</h3>
-        <p className="text-xs text-slate-400 mt-1">Submit registration for utility e-coordination</p>
+        <h2 className="font-display text-2xl font-bold text-white">Create Account</h2>
+        <p className="mt-1.5 text-sm text-slate-400">
+          Register for utility e-coordination services
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+      {/* ── API-level error banner ── */}
+      {apiError && (
+        <div className="flex items-center gap-2.5 rounded-xl border border-rose-500/25 bg-rose-500/10 p-3.5 text-xs text-rose-400 animate-slide-down">
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <span>{apiError}</span>
+        </div>
+      )}
+
+      {/*
+        ── FORM ──
+        .form-fields = flex flex-col gap-16px, overflow:visible
+        NO max-h, NO overflow-y-auto, NO fixed height
+        The page body (body tag) scrolls — this form NEVER scrolls internally
+      */}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="form-fields"
+        noValidate
+      >
+
         {/* Full Name */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Full Name</label>
+        <div className="form-group">
+          <label className="form-label" htmlFor="reg-name">Full Name</label>
           <div className="relative">
-            <User className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+            <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
+              id="reg-name"
               type="text"
+              autoComplete="name"
+              autoFocus
               placeholder="e.g. Tarun Shivhare"
-              className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
-              {...register('name', { required: 'Full name is required' })}
+              className={`glass-input pl-10 ${errors.name ? 'glass-input-error' : ''}`}
+              {...register('name', {
+                required: 'Full name is required',
+                minLength: { value: 2, message: 'Name must be at least 2 characters' },
+              })}
             />
           </div>
-          {errors.name && <span className="text-[10px] text-rose-400">{errors.name.message}</span>}
+          {errors.name && (
+            <p className="form-error">
+              <AlertCircle className="h-3 w-3 flex-shrink-0" />{errors.name.message}
+            </p>
+          )}
         </div>
 
-        {/* Email Address */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Email Address</label>
+        {/* Email */}
+        <div className="form-group">
+          <label className="form-label" htmlFor="reg-email">Email Address</label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
+              id="reg-email"
               type="email"
-              placeholder="e.g. name@domain.com"
-              className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
-              {...register('email', { required: 'Email is required' })}
+              autoComplete="email"
+              placeholder="name@domain.com"
+              className={`glass-input pl-10 ${errors.email ? 'glass-input-error' : ''}`}
+              {...register('email', {
+                required: 'Email address is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
+                  message: 'Enter a valid email address',
+                },
+              })}
             />
           </div>
-          {errors.email && <span className="text-[10px] text-rose-400">{errors.email.message}</span>}
+          {errors.email && (
+            <p className="form-error">
+              <AlertCircle className="h-3 w-3 flex-shrink-0" />{errors.email.message}
+            </p>
+          )}
         </div>
 
-        {/* Contact Phone */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Contact Number</label>
+        {/* Phone */}
+        <div className="form-group">
+          <label className="form-label" htmlFor="reg-phone">Contact Number</label>
           <div className="relative">
-            <Phone className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+            <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
-              type="text"
-              placeholder="e.g. +91 9999999999"
-              className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
-              {...register('phone', { required: 'Phone number is required' })}
+              id="reg-phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="10-digit mobile number"
+              className={`glass-input pl-10 ${errors.phone ? 'glass-input-error' : ''}`}
+              {...register('phone', {
+                required: 'Phone number is required',
+                pattern: {
+                  value: /^[6-9]\d{9}$/,
+                  message: 'Enter a valid 10-digit Indian mobile number',
+                },
+              })}
             />
           </div>
-          {errors.phone && <span className="text-[10px] text-rose-400">{errors.phone.message}</span>}
+          {errors.phone && (
+            <p className="form-error">
+              <AlertCircle className="h-3 w-3 flex-shrink-0" />{errors.phone.message}
+            </p>
+          )}
         </div>
 
         {/* Role Picker */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Account Role</label>
-          <div className="relative">
-            <select
-              className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl px-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
-              {...register('role')}
-            >
-              <option value="Citizen">Citizen User</option>
-              <option value="Department Officer">Department Officer</option>
-            </select>
-          </div>
+        <div className="form-group">
+          <label className="form-label" htmlFor="reg-role">Account Role</label>
+          <select
+            id="reg-role"
+            className="glass-input glass-select"
+            {...register('role')}
+          >
+            <option value="Citizen">Citizen User</option>
+            <option value="Department Officer">Department Officer</option>
+          </select>
         </div>
 
-        {/* Conditional Ward Field for Citizens */}
+        {/* Citizen — Ward */}
         {selectedRole === 'Citizen' && (
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Residential Ward</label>
+          <div className="form-group animate-fade-in-up">
+            <label className="form-label" htmlFor="reg-ward">Residential Ward</label>
             <div className="relative">
-              <MapPin className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+              <MapPin className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
               <select
-                className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
-                {...register('ward', { required: 'Ward is required for citizens' })}
+                id="reg-ward"
+                className={`glass-input glass-select pl-10 ${errors.ward ? 'glass-input-error' : ''}`}
+                {...register('ward', { required: 'Please select your residential ward' })}
               >
-                <option value="">Select Resident Ward</option>
+                <option value="">Select Residential Ward</option>
                 <option value="Ward 12 (TT Nagar)">Ward 12 (TT Nagar)</option>
                 <option value="Ward 45 (MP Nagar)">Ward 45 (MP Nagar)</option>
                 <option value="Ward 52 (Habibganj)">Ward 52 (Habibganj)</option>
                 <option value="Ward 80 (Kolar)">Ward 80 (Kolar)</option>
               </select>
             </div>
-            {errors.ward && <span className="text-[10px] text-rose-400">{errors.ward.message}</span>}
+            {errors.ward && (
+              <p className="form-error">
+                <AlertCircle className="h-3 w-3 flex-shrink-0" />{errors.ward.message}
+              </p>
+            )}
           </div>
         )}
 
-        {/* Conditional Department Selection for Officers */}
+        {/* Officer — Department */}
         {selectedRole === 'Department Officer' && (
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Assigned Department Code</label>
+          <div className="form-group animate-fade-in-up">
+            <label className="form-label" htmlFor="reg-dept">Assigned Department</label>
             <div className="relative">
-              <Building className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+              <Building className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
               <select
-                className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
-                {...register('departmentCode', { required: 'Department is required for officers' })}
+                id="reg-dept"
+                className={`glass-input glass-select pl-10 ${errors.departmentCode ? 'glass-input-error' : ''}`}
+                {...register('departmentCode', { required: 'Please select your department' })}
               >
                 <option value="">Select Utility Department</option>
-                {departments.map((d) => (
-                  <option key={d.code} value={d.code}>
-                    {d.name} ({d.code})
-                  </option>
+                {departments.map(d => (
+                  <option key={d.code} value={d.code}>{d.name} ({d.code})</option>
                 ))}
               </select>
             </div>
             {errors.departmentCode && (
-              <span className="text-[10px] text-rose-400">{errors.departmentCode.message}</span>
+              <p className="form-error">
+                <AlertCircle className="h-3 w-3 flex-shrink-0" />{errors.departmentCode.message}
+              </p>
             )}
           </div>
         )}
 
         {/* Password */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Set Account Password</label>
+        <div className="form-group">
+          <label className="form-label" htmlFor="reg-password">Password</label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-3 h-4 w-4 text-slate-500" />
+            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
-              type="password"
-              placeholder="Min. 6 characters"
-              className="w-full bg-slate-900/60 border border-slate-700/60 rounded-xl pl-10 pr-4 py-2.5 text-sm text-slate-200 outline-none focus:border-gov-500"
+              id="reg-password"
+              type={showPassword ? 'text' : 'password'}
+              autoComplete="new-password"
+              placeholder="Minimum 6 characters"
+              className={`glass-input pl-10 pr-11 ${errors.password ? 'glass-input-error' : ''}`}
               {...register('password', {
                 required: 'Password is required',
                 minLength: { value: 6, message: 'Password must be at least 6 characters' },
+                validate: val =>
+                  /[A-Za-z]/.test(val) || 'Password must contain at least one letter',
               })}
             />
+            <button
+              type="button"
+              tabIndex={-1}
+              onClick={() => setShowPassword(v => !v)}
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
           </div>
-          {errors.password && <span className="text-[10px] text-rose-400">{errors.password.message}</span>}
+          {errors.password && (
+            <p className="form-error">
+              <AlertCircle className="h-3 w-3 flex-shrink-0" />{errors.password.message}
+            </p>
+          )}
         </div>
 
-        {/* Register Button */}
+        {/* ── Submit — never hidden, never clipped ── */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-3 bg-gov-600 hover:bg-gov-500 disabled:opacity-50 text-slate-950 font-bold rounded-xl text-sm transition shadow-lg shadow-gov-950/20"
+          className="auth-button btn-primary"
         >
           {loading ? (
-            <div className="w-5 h-5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
+            <>
+              <span className="h-4 w-4 rounded-full border-2 border-slate-950 border-t-transparent animate-spin" />
+              Registering…
+            </>
           ) : (
             <>
               <LogIn className="h-4 w-4" />
-              Register Credentials
+              Create Account
             </>
           )}
         </button>
+
       </form>
 
-      <div className="text-center text-xs text-slate-400">
+      {/* ── Footer ── */}
+      <div className="border-t border-slate-800/80 pt-4 text-center text-sm text-slate-400">
         Already registered?{' '}
-        <Link to="/login" className="text-gov-400 hover:text-gov-300 font-semibold underline">
-          Sign In here
+        <Link to="/login" className="font-semibold text-gov-400 transition-colors hover:text-gov-300">
+          Sign in here
         </Link>
       </div>
+
     </div>
   );
 };
