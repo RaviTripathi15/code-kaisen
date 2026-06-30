@@ -3,42 +3,191 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  * {
+    @apply box-border;
+  }
+
   body {
-    @apply bg-slate-950 text-slate-100 font-sans;
+    @apply bg-slate-950 text-slate-100 font-sans antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(20, 184, 166, 0.14), transparent 32%),
+      radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.12), transparent 28%),
+      linear-gradient(135deg, #020617 0%, #020617 45%, #07111f 100%);
+    min-height: 100vh;
+  }
+
+  ::selection {
+    @apply bg-gov-500/40 text-white;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display tracking-tight;
   }
 }
 
-/* Glassmorphism Styles */
-.glass-panel {
-  background: rgba(30, 41, 59, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
+@layer components {
+  /* Glass surfaces */
+  .glass-panel {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.78));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 55px rgba(2, 6, 23, 0.45);
+  }
 
-.glass-card {
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
+  .glass-card {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.86), rgba(15, 23, 42, 0.7));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 14px 40px rgba(2, 6, 23, 0.32);
+    @apply transition-all duration-300;
+  }
 
-.glass-navbar {
-  background: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
+  .glass-navbar {
+    background: rgba(2, 6, 23, 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-.glass-sidebar {
-  background: rgba(15, 23, 42, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
+  .glass-sidebar {
+    background: rgba(2, 6, 23, 0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
 
-.glass-input {
-  @apply bg-slate-900/50 border border-slate-700/60 focus:border-gov-500 focus:ring-1 focus:ring-gov-500 rounded-lg px-4 py-2 text-slate-200 outline-none transition-all duration-300;
+  /* Typography */
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.22em] text-gov-400/90;
+  }
+
+  .page-title {
+    @apply text-2xl sm:text-3xl font-extrabold text-white tracking-tight;
+  }
+
+  .page-subtitle {
+    @apply mt-2 max-w-2xl text-sm leading-relaxed text-slate-400;
+  }
+
+  .section-title {
+    @apply text-base font-bold text-slate-100 flex items-center gap-2.5;
+  }
+
+  /* Layout shells */
+  .section-shell {
+    @apply rounded-2xl border border-slate-800/70 bg-slate-900/45 shadow-[0_12px_35px_rgba(2,6,23,0.35)] backdrop-blur-xl transition-all duration-300;
+  }
+
+  .hero-banner {
+    @apply rounded-2xl border border-slate-800/70 bg-gradient-to-br from-slate-900/95 via-slate-900/85 to-slate-800/90 p-6 sm:p-8 shadow-[0_20px_60px_rgba(2,6,23,0.4)];
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gov-500 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-gov-950/40 transition-all duration-200 hover:-translate-y-0.5 hover:bg-gov-400 hover:shadow-gov-500/20 focus:outline-none focus:ring-2 focus:ring-gov-400 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0 disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-700/80 bg-slate-900/70 px-5 py-3 text-sm font-semibold text-slate-200 transition-all duration-200 hover:-translate-y-0.5 hover:border-gov-500/50 hover:bg-slate-800/80 focus:outline-none focus:ring-2 focus:ring-slate-600 focus:ring-offset-2 focus:ring-offset-slate-950 active:translate-y-0;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-gov-400 transition-all duration-200 hover:bg-gov-500/10 hover:text-gov-300;
+  }
+
+  /* Forms */
+  .form-group {
+    @apply space-y-2;
+  }
+
+  .form-label {
+    @apply block text-xs font-semibold uppercase tracking-wide text-slate-300;
+  }
+
+  .form-hint {
+    @apply text-[11px] text-slate-500 leading-relaxed;
+  }
+
+  .form-error {
+    @apply flex items-center gap-1.5 text-[11px] font-medium text-rose-400 mt-1;
+  }
+
+  .glass-input {
+    @apply w-full rounded-xl border border-slate-700/70 bg-slate-900/70 px-4 py-3 text-sm text-slate-200 outline-none transition-all duration-200 placeholder:text-slate-500 hover:border-slate-600 focus:border-gov-500 focus:bg-slate-900/90 focus:ring-2 focus:ring-gov-500/25;
+  }
+
+  .glass-input-error {
+    @apply border-rose-500/70 focus:border-rose-500 focus:ring-rose-500/25;
+  }
+
+  .glass-select {
+    @apply glass-input appearance-none cursor-pointer;
+  }
+
+  .glass-textarea {
+    @apply glass-input min-h-[100px] resize-y;
+  }
+
+  /* Status badges */
+  .badge-chip {
+    @apply inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider;
+  }
+
+  .badge-resolved {
+    @apply badge-chip border-emerald-500/30 bg-emerald-500/10 text-emerald-400;
+  }
+
+  .badge-pending {
+    @apply badge-chip border-amber-500/30 bg-amber-500/10 text-amber-400;
+  }
+
+  .badge-progress {
+    @apply badge-chip border-sky-500/30 bg-sky-500/10 text-sky-400;
+  }
+
+  .badge-overdue {
+    @apply badge-chip border-rose-500/30 bg-rose-500/10 text-rose-400;
+  }
+
+  .badge-active {
+    @apply badge-chip border-orange-500/30 bg-orange-500/10 text-orange-400;
+  }
+
+  .badge-default {
+    @apply badge-chip border-slate-600/50 bg-slate-800/60 text-slate-300;
+  }
+
+  /* Nav active state */
+  .nav-link {
+    @apply flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200;
+  }
+
+  .nav-link-active {
+    @apply nav-link border border-gov-500/40 bg-gov-500/15 text-gov-300 shadow-lg shadow-gov-950/20;
+  }
+
+  .nav-link-inactive {
+    @apply nav-link text-slate-400 hover:bg-slate-900/60 hover:text-slate-200;
+  }
+
+  /* Empty & loading states */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 px-6 text-center;
+  }
+
+  .empty-state-icon {
+    @apply mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-800 bg-slate-900/80 text-slate-500;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-lg bg-slate-800/80;
+  }
 }
 
 /* Leaflet Map Overrides */
@@ -52,6 +201,7 @@
 .leaflet-popup-tip {
   background: rgba(15, 23, 42, 0.95) !important;
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #e2e8f0 !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
@@ -61,7 +211,7 @@
   color: #94a3b8 !important;
 }
 
-/* Scrollbar Customization */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -80,12 +230,31 @@
   background: #475569;
 }
 
-/* Animation utilities */
+/* Animations */
 @keyframes pulse-border {
   0%, 100% { border-color: rgba(244, 63, 94, 0.4); }
   50% { border-color: rgba(244, 63, 94, 1); }
 }
 
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .animate-pulse-border {
   animation: pulse-border 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }

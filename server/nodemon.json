@@ -1,0 +1,8 @@
+{
+  "ignore": [
+    "node_modules/**",
+    "installer_log.txt",
+    "install_success.txt",
+    "../client/node_modules/**"
+  ]
+}

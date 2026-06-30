@@ -10,10 +10,14 @@ import ActivityLog from '../models/ActivityLog.js';
 
 dotenv.config();
 
-const seedData = async () => {
+export const seedData = async (shouldExit = true) => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/setu');
-    console.log('MongoDB connected for seeding...');
+    if (mongoose.connection.readyState !== 1) {
+      await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/setu');
+      console.log('MongoDB connected for seeding...');
+    } else {
+      console.log('Using existing MongoDB connection for seeding...');
+    }
 
     // Clear existing data
     await User.deleteMany();
@@ -400,11 +404,28 @@ const seedData = async () => {
     await ActivityLog.create(logs);
 
     console.log('Database Seeding Completed Successfully.');
-    process.exit(0);
+    if (shouldExit) {
+      process.exit(0);
+    }
   } catch (error) {
     console.error('Seeding failed:', error);
-    process.exit(1);
+    if (shouldExit) {
+      process.exit(1);
+    }
+    throw error;
   }
 };
 
-seedData();
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const isMain = () => {
+  if (!process.argv[1]) return false;
+  const scriptPath = fileURLToPath(import.meta.url);
+  const executedPath = path.resolve(process.argv[1]);
+  return scriptPath === executedPath;
+};
+
+if (isMain()) {
+  seedData(true);
+}

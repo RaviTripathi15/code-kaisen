@@ -13,9 +13,9 @@ export default {
           200: '#99f6e4',
           300: '#5eead4',
           400: '#2dd4bf',
-          500: '#14b8a6', // Primary Teal
+          500: '#14b8a6',
           600: '#0d9488',
-          700: '#0f766e', // Dark Teal
+          700: '#0f766e',
           800: '#115e59',
           900: '#134e4a',
           950: '#042f2e',
@@ -26,15 +26,20 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
         'glass-light': '0 8px 32px 0 rgba(255, 255, 255, 0.05)',
+        'card-hover': '0 20px 50px rgba(2, 6, 23, 0.45)',
       },
       backdropBlur: {
         'xs': '2px',
-      }
+      },
+      animation: {
+        'fade-in': 'fade-in-up 0.4s ease-out forwards',
+      },
     },
   },
   plugins: [],
